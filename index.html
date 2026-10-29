@@ -11,10 +11,15 @@ button{width:100%;padding:14px;background:#9E6E55;color:#fff;border:0;font:inher
 <form id="f"><input name="name" placeholder="Full name" required><input name="phone" type="tel" placeholder="Phone number" required>
 <select name="time" required><option value="">Select your time</option>
 <option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option></select>
-<button>CONFIRM</button></form><p id="ok" style="display:none;font-size:1.3em;color:#9E6E55">Thank you — your appointment is confirmed.</p></div>
+<button>CONFIRM</button></form><div id="ok" style="display:none;font-size:1.3em;color:#9E6E55"><p>Thank you — your appointment is confirmed</p><p class="d">Wednesday, 04 November 2026</p><p>The Avenues Mall Branch – End of Phase One</p></div></div>
 <script>
 // Fill in after creating the Google Form: FORM_ID and the entry.<id> of each question
 const FORM="https://docs.google.com/forms/d/e/1FAIpQLSdNfEJ6AVzykcEy9FSrusBwYyu1ZJEwEPkatkqLk7IGBF8oMw/formResponse",E={name:"entry.1655047137",phone:"entry.1937265659",time:"entry.91117268"};
-f.onsubmit=e=>{e.preventDefault();const d=new FormData(f),b=new URLSearchParams();for(const k in E)b.append(E[k],d.get(k));
-fetch(FORM,{method:"POST",mode:"no-cors",body:b}).finally(()=>{f.style.display="none";ok.style.display="block"})};
+document.addEventListener("DOMContentLoaded",function(){
+var form=document.getElementById("f"),ok=document.getElementById("ok"),btn=form.querySelector("button"),sent=false;
+function done(){form.reset();form.style.display="none";ok.style.display="block";window.scrollTo(0,0);}
+form.addEventListener("submit",function(e){e.preventDefault();if(sent)return;sent=true;btn.disabled=true;btn.textContent="SENDING...";
+var d=new FormData(form),b=new URLSearchParams();for(var k in E)b.append(E[k],d.get(k));
+try{fetch(FORM,{method:"POST",mode:"no-cors",body:b,keepalive:true}).catch(function(){});}catch(x){}
+setTimeout(done,600);});});
 </script></body></html>

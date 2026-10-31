@@ -11,15 +11,28 @@ button{width:100%;padding:14px;background:#CFA08A;color:#1C362B;border:0;font:in
 <form id="f"><input name="name" placeholder="Full name" required><input name="phone" type="tel" placeholder="Phone number" required>
 <select name="time" required><option value="">Select your time</option>
 <option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option></select>
-<button>CONFIRM</button></form><div id="ok" style="display:none;font-size:1.3em;color:#CFA08A"><p>Thank you — your appointment is confirmed</p><p class="d">Wednesday, 04 November 2026</p><p>The Avenues Mall Branch – End of Phase One</p></div></div>
+<button>CONFIRM</button></form><div id="ok" style="display:none;font-size:1.3em;color:#CFA08A"><p>Thank you — your appointment is confirmed</p><p class="d">Wednesday, 04 November 2026</p><p>The Avenues Mall Branch – End of Phase One</p>
+<div id="qrbox" style="margin:18px auto 6px;background:#F6EFE2;padding:14px;border:3px solid #CFA08A;display:inline-block"><img id="qrimg" alt="Your booking QR" style="width:230px;height:230px;display:block;image-rendering:pixelated"></div>
+<p id="ref" style="font-size:1.5em;letter-spacing:2px;margin:10px 0 4px"></p><div id="det" style="color:#F6EFE2;font-size:.95em;line-height:1.5"></div>
+<p style="font-size:.9em;color:#F6EFE2;opacity:.85">Save / screenshot this QR and show it at the branch</p>
+<a id="dl" download="MINI-MANY-booking.gif" style="display:inline-block;padding:12px 26px;background:#CFA08A;color:#1C362B;text-decoration:none;letter-spacing:2px;font-size:.9em">DOWNLOAD QR</a></div></div>
+<script src="qrcode.js"></script>
 <script>
 // Fill in after creating the Google Form: FORM_ID and the entry.<id> of each question
 const FORM="https://docs.google.com/forms/d/e/1FAIpQLSdNfEJ6AVzykcEy9FSrusBwYyu1ZJEwEPkatkqLk7IGBF8oMw/formResponse",E={name:"entry.1655047137",phone:"entry.1937265659",time:"entry.91117268"};
 document.addEventListener("DOMContentLoaded",function(){
 var form=document.getElementById("f"),ok=document.getElementById("ok"),btn=form.querySelector("button"),sent=false;
-function done(){form.reset();form.style.display="none";ok.style.display="block";window.scrollTo(0,0);}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function mkRef(){var A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",r=new Uint32Array(4),o="MM-";crypto.getRandomValues(r);for(var i=0;i<4;i++)o+=A[r[i]%A.length];return o}
+function done(v){var txt="MINI & MANY Tasting – 04 Nov 2026\nRef: "+v.ref+"\nName: "+v.name+"\nPhone: "+v.phone+"\nTime: "+v.time;
+qrcode.stringToBytes=qrcode.stringToBytesFuncs["UTF-8"];var q=qrcode(0,"M");q.addData(txt,"Byte");q.make();var u=q.createDataURL(8,4);
+document.getElementById("qrimg").src=u;var dl=document.getElementById("dl");dl.href=u;dl.download="MINI-MANY-"+v.ref+".gif";
+document.getElementById("ref").textContent="Ref: "+v.ref;
+document.getElementById("det").innerHTML=esc(v.name)+"<br>"+esc(v.phone)+"<br>Time: "+esc(v.time);
+form.reset();form.style.display="none";ok.style.display="block";window.scrollTo(0,0);}
 form.addEventListener("submit",function(e){e.preventDefault();if(sent)return;sent=true;btn.disabled=true;btn.textContent="SENDING...";
-var d=new FormData(form),b=new URLSearchParams();for(var k in E)b.append(E[k],d.get(k));
+var d=new FormData(form),v={ref:mkRef(),name:d.get("name").trim(),phone:d.get("phone").trim(),time:d.get("time")},b=new URLSearchParams();
+b.append(E.name,v.name+" ["+v.ref+"]");b.append(E.phone,v.phone);b.append(E.time,v.time);
 try{fetch(FORM,{method:"POST",mode:"no-cors",body:b,keepalive:true}).catch(function(){});}catch(x){}
-setTimeout(done,600);});});
+setTimeout(function(){done(v)},600);});});
 </script></body></html>
